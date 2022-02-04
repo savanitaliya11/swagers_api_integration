@@ -1,9 +1,9 @@
-// ignore_for_file: use_key_in_widget_constructors
+// ignore_for_file: use_key_in_widget_constructors, prefer_const_constructors
 
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:swagger_api_integration/api/model/res_model/note_list_res_model.dart';
+import 'package:swagger_api_integration/api/repo/delete_notelist_user.dart';
 import 'package:swagger_api_integration/api/repo/get_user_repo.dart';
 import 'package:swagger_api_integration/view/add_data_screen.dart';
 import 'package:swagger_api_integration/view/update_note_screen.dart';
@@ -26,19 +26,33 @@ class GetNoticeData extends StatelessWidget {
                   return ListView.builder(
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
-                      return ListTile(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => UpdateNoteScreen(
-                                  noteId: '${snapshot.data![index].noteId}',
-                                ),
-                              ));
+                      String? _id = '${snapshot.data![index].noteId}';
+                      return Dismissible(
+                        direction: DismissDirection.endToStart,
+                        background: Icon(Icons.delete),
+                        key: ValueKey(_id),
+                        onDismissed: (value) async {
+                          DeleteNoteRepo.deleteNoteRepo(
+                            noteId: _id,
+                            //  noteTitle: '${snapshot.data![index].noteTitle}',
+                          );
                         },
-                        title: Text('${snapshot.data![index].noteTitle}'),
-                        subtitle:
-                            Text('${snapshot.data![index].createDateTime}'),
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => UpdateNoteScreen(
+                                    noteId: '${snapshot.data![index].noteId}',
+                                    noteTitle:
+                                        '${snapshot.data![index].noteTitle}',
+                                  ),
+                                ));
+                          },
+                          title: Text('${snapshot.data![index].noteTitle}'),
+                          subtitle:
+                              Text('${snapshot.data![index].createDateTime}'),
+                        ),
                       );
                     },
                   );
@@ -48,20 +62,31 @@ class GetNoticeData extends StatelessWidget {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 340, bottom: 15),
-            child: FloatingActionButton(
-              elevation: 15,
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => AddDataScreen(),
-                    ));
-              },
-              child: Icon(Icons.add),
-            ),
-          )
+          BottomNavigationBar(
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddDataScreen(),
+                          ));
+                    },
+                    icon: Icon(Icons.add)),
+                label: 'Add',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.update),
+                label: 'Update',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.delete),
+                label: 'Delete',
+              ),
+            ],
+            selectedItemColor: Colors.amber[800],
+          ),
         ],
       ),
     );
