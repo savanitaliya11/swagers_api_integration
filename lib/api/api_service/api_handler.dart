@@ -3,7 +3,7 @@ import 'dart:developer';
 
 import 'package:http/http.dart' as http;
 
-enum APIType { aGet, aPost, aDelete, aRead }
+enum APIType { aGet, aPost, aDelete, aPut }
 
 class APIHandler {
   static http.Response? response;
@@ -22,14 +22,16 @@ class APIHandler {
       } else if (apiType == APIType.aDelete) {
         response = await http.delete(Uri.parse(url!),
             body: jsonEncode(body), headers: headers);
-      } else if (apiType == APIType.aRead) {
-        response = (await http.read(Uri.parse(url!), headers: headers))
-            as http.Response?;
+      } else if (apiType == APIType.aPut) {
+        response = (await http.put(Uri.parse(url!),
+            body: jsonEncode(body), headers: headers));
       }
 
       if (response!.statusCode == 200) {
         return response!.body;
       } else if (response!.statusCode == 201) {
+        return response!.body;
+      } else if (response!.statusCode == 204) {
         return response!.body;
       } else {
         return null;

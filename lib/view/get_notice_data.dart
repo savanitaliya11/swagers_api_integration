@@ -1,9 +1,12 @@
 // ignore_for_file: use_key_in_widget_constructors
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:swagger_api_integration/api/model/res_model/note_list_res_model.dart';
 import 'package:swagger_api_integration/api/repo/get_user_repo.dart';
 import 'package:swagger_api_integration/view/add_data_screen.dart';
+import 'package:swagger_api_integration/view/update_note_screen.dart';
 
 class GetNoticeData extends StatelessWidget {
   @override
@@ -24,10 +27,18 @@ class GetNoticeData extends StatelessWidget {
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        leading: Text('${snapshot.data![index].noteTitle}'),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => UpdateNoteScreen(
+                                  noteId: '${snapshot.data![index].noteId}',
+                                ),
+                              ));
+                        },
+                        title: Text('${snapshot.data![index].noteTitle}'),
                         subtitle:
                             Text('${snapshot.data![index].createDateTime}'),
-                        title: Text('${snapshot.data![index].noteId}'),
                       );
                     },
                   );
